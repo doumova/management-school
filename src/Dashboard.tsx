@@ -8,14 +8,26 @@ import {
     IoAdd,
     IoTrash,
 } from "react-icons/io5";
+import axios from "axios";
 
 
 interface MyState{
-   
-
+    students:[];
 }
-
 export class Dashboard extends Component<{}, MyState>{
+
+    state: MyState= {
+        students:[],
+
+    };
+
+    componentDidMount(){
+        axios.get('http:localhost:7070/list')
+        .then(res=>{
+            const students = res.data
+            this.setState((students))
+        })
+    }
     
     render(){
         return(
