@@ -9,27 +9,38 @@ import {
     IoTrash,
 } from "react-icons/io5";
 import axios from "axios";
+import { CreateModal } from "./CreateModal";
 
 
 interface MyState{
     students:[];
+    isOpen: boolean;
 }
+
+
 export class Dashboard extends Component<{}, MyState>{
-
-    state: MyState= {
+    
+    state: MyState = {
         students:[],
-
+        isOpen:false
+    
     };
 
     componentDidMount(){
-        axios.get('http:localhost:7070/list')
+        axios.get('http://localhost:7070/list')
         .then(res=>{
             const students = res.data
-            this.setState((students))
+            this.setState({students})
         })
+        
+    }
+
+    toggle= ()=>{
+        this.setState((prevState)=>({isOpen: !prevState.isOpen}))
     }
     
     render(){
+ 
         return(
             <div>
                 <Navbar color="dark" light mb-2>
@@ -80,10 +91,11 @@ export class Dashboard extends Component<{}, MyState>{
 
                     </Row>
                 </Container>
+                <CreateModal isOpen={this.state.isOpen} toggle={this.toggle}></CreateModal>
                 <Container className="mt-4">
                     <Row>
                         <Col sm='12'>
-                            <Button block color="success">
+                            <Button block color="success" onClick={this.toggle}>
                             <IoAdd className="font-size-xl"/>
                                 <span className="font-size-xl">
                                Add Student
@@ -92,54 +104,63 @@ export class Dashboard extends Component<{}, MyState>{
                         </Col>
                     </Row>
                 </Container>
-                <Container className="mt-4">
-                    <Row>
-                        <Col sm='12'>
-                            <Card body>
-                                <CardTitle tag="h5">
-                                    <IoMan className="font-size-xl"/>
-                                    <span>Modou Gueye</span>
-                                </CardTitle>
-                                <CardBody>
-                                    <Row>
-                                        <Col sm='4' className="text-center">
-                                            <span className="font-weight-bold">Class</span>
-                                            <span> Second year</span>
-                                        </Col>
-                                        <Col sm='4' className="text-center">
-                                            <span className="font-weight-bold">Age</span>
-                                            <span> 17 ans</span>
-                                        </Col>
-                                        <Col sm='4' className="text-center">
-                                            <span className="font-weight-bold">Teacher</span>
-                                            <span> Mr Barry</span>
-                                        </Col>
-                                    </Row>
-                                </CardBody>
-                                <CardFooter>
-                                    <Row>
-                                        <Col sm='6'>
-                                            <Button block outline color="primary">
-                                            <IoSettings className="font-size-xl"/>
-                                               <span> Edit</span>
-                                            </Button>
-                                        </Col>
-                                        <Col sm='6'>
-                                            <Button block outline color="danger">
-                                            <IoTrash className="font-size-xl"/>
-                                                 <span> Delete</span>
-                                            </Button>
-                                        </Col>
-                                    </Row>
-                                </CardFooter>
-
-                            </Card>
-                        </Col>
-                    </Row>
+                <Container className="mt-4"> 
+                    {
+                    this.state.students.map(student=>renderStudent(student))
+                    }
                 </Container>
                
             </div>
             
-        )
+        );
     }
 }
+
+function renderStudent(st) {
+        return(
+            <Row>
+            <Col sm='12'>
+                <Card body>
+                    <CardTitle tag="h5">
+                        <IoMan className="font-size-xl"/>
+                        <span>Name :</span>
+                        <span>{st.firstName +" "+st.lastName}</span>
+                    </CardTitle>
+                    <CardBody>
+                        <Row>
+                            <Col sm='4' className="text-center">
+                                <span className="font-weight-bold">Class</span>
+                                <span> Second year</span>
+                            </Col>
+                            <Col sm='4' className="text-center">
+                                <span className="font-weight-bold">Age</span>
+                                <span> {st.age} ans</span>
+                            </Col>
+                            <Col sm='4' className="text-center">
+                                <span className="font-weight-bold">Teacher</span>
+                                <span> {st.teacher}</span>
+                            </Col>
+                        </Row>
+                    </CardBody>
+                    <CardFooter>
+                        <Row>
+                            <Col sm='6'>
+                                <Button block outline color="primary">
+                                <IoSettings className="font-size-xl"/>
+                                   <span> Edit</span>
+                                </Button>
+                            </Col>
+                            <Col sm='6'>
+                                <Button block outline color="danger">
+                                <IoTrash className="font-size-xl"/>
+                                     <span> Delete</span>
+                                </Button>
+                            </Col>
+                        </Row>
+                    </CardFooter>
+
+                </Card>
+            </Col>
+        </Row>
+        );
+    }
